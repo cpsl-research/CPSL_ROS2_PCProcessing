@@ -1,0 +1,15 @@
+[submodule "submodules/mmwave_model_integrator"]
+	path = submodules/mmwave_model_integrator
+	url = https://github.com/davidmhunt/mmwave_model_integrator.git
+[submodule "submodules/lib-avstack-core"]
+	path = submodules/lib-avstack-core
+	url = https://github.com/avstack-lab/lib-avstack-core.git
+[submodule "submodules/geometries"]
+	path = submodules/geometries
+	url = https://github.com/davidmhunt/geometries.git
+[submodule "submodules/odometry"]
+	path = submodules/odometry
+	url = https://github.com/davidmhunt/odometry.git
+[submodule "submodules/mmwave_radar_processing"]
+	path = submodules/mmwave_radar_processing
+	url = https://github.com/davidmhunt/mmwave_radar_processing.git
