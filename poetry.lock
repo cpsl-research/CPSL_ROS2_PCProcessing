@@ -3521,6 +3521,35 @@ files = [
 ]
 
 [[package]]
+name = "odometry"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "~3.10"
+files = []
+develop = true
+
+[package.dependencies]
+addict = "^2.4.0"
+imageio = {version = "^2.33.1", extras = ["ffmpeg"]}
+ipywidgets = "^8.1.1"
+jupyter = "^1.0.0"
+matplotlib = "^3.8.2"
+numpy = "~1.25"
+open3d = "^0.18.0"
+opencv-python = ">4.7, <4.9.0.80"
+pandas = "^2.1.4"
+poetry-dotenv-plugin = "^0.2.0"
+pytest = "^7.4.4"
+scikit-learn = "^1.3.2"
+SciPy = "^1.11.4"
+tqdm = "^4.66.1"
+
+[package.source]
+type = "directory"
+url = "submodules/odometry"
+
+[[package]]
 name = "onnx"
 version = "1.17.0"
 description = "Open Neural Network Exchange"
@@ -6814,4 +6843,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "5a0fc1d9826ddeff7fe807e93e0a92f4b2a00fb4577b83f80384f717cb5abad9"
+content-hash = "5c587138a863e08ec7889812f430226a5bcfe7bcbb7b0ed3e7415decf9144f3d"

@@ -1,0 +1,13 @@
+pc_combiner:
+  ros__parameters:
+    base_frame: "base_link"
+    in_point_cloud_topics: ["radar_0/detected_points", "radar_1/detected_points"]
+    out_point_cloud_topic: "radar_combined/detected_points"
+    update_rate: 20.0
+vel_filtering:
+  ros__parameters:
+    point_cloud_sub_topic: "radar_combined/detected_points"
+    odom_sub_topic: "odom"
+    dynamic_point_cloud_pub_topic: "radar_combined/dynamic_points"
+    static_point_cloud_pub_topic: "radar_combined/static_points"
+    v_thresh: 0.05

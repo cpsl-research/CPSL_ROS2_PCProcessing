@@ -25,6 +25,7 @@ opencv-python = ">4.7, <4.9.0.80"
 poetry-dotenv-plugin = "^0.2.0"
 
 [tool.poetry.group.submodules.dependencies]
+odometry = {path="./submodules/odometry/", develop = true}
 cpsl_datasets = {path="./submodules/cpsl_datasets/", develop = true}
 mmwave_radar_processing = {path="./submodules/mmwave_radar_processing/", develop = true}
 mmwave_model_integrator = {path="./submodules/mmwave_model_integrator/", develop=true}
