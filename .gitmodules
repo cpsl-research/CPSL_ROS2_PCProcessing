@@ -13,3 +13,12 @@
 [submodule "submodules/mmwave_radar_processing"]
 	path = submodules/mmwave_radar_processing
 	url = https://github.com/davidmhunt/mmwave_radar_processing.git
+[submodule "submodules/cpsl_datasets"]
+	path = submodules/cpsl_datasets
+	url = https://github.com/davidmhunt/cpsl_datasets.git
+[submodule "submodules/radcloud"]
+	path = submodules/radcloud
+	url = https://github.com/davidmhunt/radcloud.git
+[submodule "submodules/radarhd"]
+	path = submodules/radarhd
+	url = https://github.com/davidmhunt/radarhd.git
