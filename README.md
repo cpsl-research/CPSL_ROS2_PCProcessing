@@ -149,7 +149,7 @@ source install/setup.bash
 To run the ROS2 nodes for the CPSL_ROS2_PC_Processing packages, complete the following steps:
 1. go into the CPSL_ROS2_PC_Processing directory
 ```
-cd CPSL_ROS2_PC_Processing
+cd CPSL_ROS2_PCProcessing
 ```
 2. activate the poetry shell
 ```
@@ -169,6 +169,8 @@ When launching, the following parameters can also be set by using the `parameter
 |----------------|--------------|------------------------------------------------------|
 |`namespace`|''|The robot's namespace|
 |`param_file`| 'ugv_gnn.yaml'|YAML file with parameters for the nodes in the configs directory|
+|`model_state_dict`| 'Sage_10fp_20fh_0_50_th_5mRng_0_2_res.pth'|.pth config file in the model_state_dicts folder|
+|`scan_enable`| 'false'|If enabled, additionally publish a /LaserScan message on the radar_combined/scan topic|
 
 
 ### Using .env for Project Directories

@@ -44,6 +44,9 @@ class PCCombiner(Node):
         #publishers
         self.pc_pub:rclpy.publisher.Publisher = None
 
+        #keeping track of most recent point cloud's time
+        self.latest_stamp:rclpy.time.Time = None
+
         #tf tree management
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(
@@ -133,6 +136,9 @@ class PCCombiner(Node):
             index (int): the index of the point cloud subscriber corresponding to the message
         """
         self.in_pc_msgs_latest[index] = msg
+
+        #update the lastest stamp
+        self.latest_stamp = msg.header.stamp
 
         #update the fields list if it hasn't already been
         if not self.pc_fields:
@@ -249,7 +255,7 @@ class PCCombiner(Node):
             PointCloud2: PointCloud2 object of points from the numpy array
         """
         header = std_msgs.msg.Header()
-        header.stamp = self.get_clock().now().to_msg()
+        header.stamp = self.latest_stamp#self.get_clock().now().to_msg()
         header.frame_id = self.base_frame
 
         msg = pc2.create_cloud(

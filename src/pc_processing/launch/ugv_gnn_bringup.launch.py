@@ -28,7 +28,7 @@ ARGUMENTS = [
     DeclareLaunchArgument('scan_enable',
                           default_value='false',
                           choices=['true','false'],
-                          description='If lidar is enabled, additionally publish a /LaserScan message on the radar_combined/scan topic'),
+                          description='If enabled, additionally publish a /LaserScan message on the radar_combined/scan topic'),
 ]  
 
 def launch_setup(context, *args, **kwargs):

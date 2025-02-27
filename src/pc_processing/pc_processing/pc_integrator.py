@@ -66,6 +66,11 @@ class GNNPCIntegrator(Node):
         #publishers
         self.point_cloud_pub:rclpy.publisher.Publisher = None
 
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(
+            buffer=self.tf_buffer,
+            node=self)
+
         #vehicle velocity variable
         self.current_pose:Pose = Pose()
         self.vehicle_moving:bool = False
@@ -247,11 +252,37 @@ class GNNPCIntegrator(Node):
             #get the points as a np array
             pc_np = self.pointcloud2_to_np(msg)
 
+            # try:
+            #     transform = self.tf_buffer.lookup_transform(
+            #         target_frame="odom",
+            #         source_frame="base_link",
+            #         time=msg.header.stamp,
+            #         timeout=rclpy.duration.Duration(seconds=0.1)
+            #     )
+
+            #     current_pose = Pose(
+            #         position=Position(
+            #             x=transform.transform.translation.x,
+            #             y=transform.transform.translation.y,
+            #             z=transform.transform.translation.z,
+            #         ),
+            #         orientation=Orientation(
+            #             qx=transform.transform.rotation.x,
+            #             qy=transform.transform.rotation.y,
+            #             qz=transform.transform.rotation.z,
+            #             qw=transform.transform.rotation.w
+            #         )
+            #     )
+            # except Exception as e:
+            #     self.get_logger().info("could get transformation from base->odom: {}".format(e))
+
+            #     return None  
+
             #add code here to process the point cloud
             self.pc_integrator.add_points(
                 static_points=pc_np,
                 current_pose=self.current_pose
-            )            
+            )
 
         #get the latest point cloud
         processed_pc = self.pc_integrator.get_latest_pc()
@@ -281,17 +312,17 @@ class GNNPCIntegrator(Node):
             msg (Odometry): the latest Odometry message from the subscriber
         """
         #update the vehicle's velocity
-        vehicle_vel = np.array([
+        vehicle_vel = np.abs(np.array([
             msg.twist.twist.linear.x,
             msg.twist.twist.linear.y,
             msg.twist.twist.linear.z
-        ])
+        ]))
 
-        vehicle_rot = np.array([
+        vehicle_rot = np.abs(np.array([
             msg.twist.twist.angular.x,
             msg.twist.twist.angular.y,
             msg.twist.twist.angular.z
-        ])
+        ]))
 
         self.vehicle_moving = not (
             np.all(vehicle_vel < 0.01) and np.all(vehicle_rot < 0.02)
