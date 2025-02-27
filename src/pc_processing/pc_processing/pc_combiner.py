@@ -110,6 +110,7 @@ class PCCombiner(Node):
         self.get_logger().info(f'Base frame set to: {self.base_frame}')
         self.get_logger().info(f'In point cloud topics set to: {self.in_point_cloud_topics}')
         self.get_logger().info("Output point cloud topic set to: {}".format(self.out_point_cloud_topic))
+        self.get_logger().info(f'update_rate set to: {self.update_rate}')
     
     def init_subs(self):
         """Initialize the point cloud subscribers based on the given in_point_cloud_topics list

@@ -21,19 +21,23 @@ pkg_pc_processing = get_package_share_directory("pc_processing")
 ARGUMENTS = [
     DeclareLaunchArgument('namespace', default_value='',
                           description='namespace'),
-    DeclareLaunchArgument('base_frame',
-                          default_value='base_link',
-                          description='base frame to publish point clouds in'),
     DeclareLaunchArgument('param_file', default_value='ugv_gnn.yaml',
-                          description='.yaml config file in the configs folder')
-]
+                          description='.yaml config file in the configs folder'),
+    DeclareLaunchArgument('model_state_dict', default_value='Sage_10fp_20fh_0_50_th_5mRng_0_2_res.pth',
+                          description='.pth config file in the model_state_dicts folder'),
+    DeclareLaunchArgument('scan_enable',
+                          default_value='false',
+                          choices=['true','false'],
+                          description='If lidar is enabled, additionally publish a /LaserScan message on the radar_combined/scan topic'),
+]  
 
 def launch_setup(context, *args, **kwargs):
 
     #load parameters
     namespace = LaunchConfiguration('namespace')
-    base_frame = LaunchConfiguration('base_frame')
     param_file = LaunchConfiguration('param_file')
+    model_state_dict = LaunchConfiguration('model_state_dict')
+    scan_enable = LaunchConfiguration('scan_enable')
 
     #updating paths
     namespace_str = namespace.perform(context)
@@ -43,8 +47,11 @@ def launch_setup(context, *args, **kwargs):
     param_file_str = param_file.perform(context)
     param_file_path = PathJoinSubstitution([pkg_pc_processing, 'configs', param_file_str])
 
+    model_state_dict_str = model_state_dict.perform(context)
+    model_state_dict_path = PathJoinSubstitution([pkg_pc_processing,'model_state_dicts', model_state_dict_str])
+
     param_substitutions = {
-        "base_frame":base_frame
+        "state_dict_path":model_state_dict_path
     }
 
     #update the parameter file with 
@@ -79,6 +86,39 @@ def launch_setup(context, *args, **kwargs):
             name='vel_filtering',
             output='screen',
             parameters=[configured_params],
+        ),
+        Node(
+            package='pc_processing',
+            executable='pc_integrator',
+            name='pc_integrator',
+            output='screen',
+            parameters=[configured_params],
+        ),
+        #Launch laserscan topic
+        Node(
+            package='pointcloud_to_laserscan',
+            executable='pointcloud_to_laserscan_node',
+            name='pointcloud_to_laserscan_node',
+            output='screen',
+            parameters=[
+                {'min_height':-0.1},
+                {'max_height':0.25},
+                {'angle_min':-3.141592653589793},
+                {'angle_max':3.141592653589793},
+                {'angle_increment':0.0174532925}, #pi/180
+                {'queue_size':10},
+                {'scan_time':1.0/20.0},
+                {'range_min':0.25},
+                {'range_max':5.0},
+                {'target_frame':''}, #use lidar's point cloud frame
+                {'transform_tolerance':0.01},
+                {'use_inf':True},
+            ],
+            condition=IfCondition(scan_enable),
+            remappings=[
+                ('cloud_in', 'radar_combined/integrated_pc'),  # Remap input point cloud topic
+                ('scan', 'radar_combined/scan')  # Remap output laser scan topic
+            ],
         ),
     ])
 

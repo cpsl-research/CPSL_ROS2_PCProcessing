@@ -14,6 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
         (os.path.join('share', package_name, 'configs'), glob(os.path.join('configs', '*'))),
+        (os.path.join('share', package_name, 'model_state_dicts'), glob(os.path.join('model_state_dicts', '*'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -25,7 +26,8 @@ setup(
     entry_points={
         'console_scripts': [
             'pc_combiner= pc_processing.pc_combiner:main',
-            'vel_filtering= pc_processing.vel_filtering:main'
+            'vel_filtering= pc_processing.vel_filtering:main',
+            'pc_integrator= pc_processing.pc_integrator:main'
         ],
     },
 )

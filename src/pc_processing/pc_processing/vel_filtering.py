@@ -35,7 +35,7 @@ class VelFilter(Node):
 
         #defining qos profile
         self.qos_profile = QoSProfile(
-            reliability=QoSReliabilityPolicy.RELIABLE,
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
             history=QoSHistoryPolicy.KEEP_LAST,
             depth=1
         )
@@ -87,7 +87,7 @@ class VelFilter(Node):
             value='/odom',
             descriptor=ParameterDescriptor(
                 type=ParameterType.PARAMETER_STRING,
-                description='The pointCloud2 topic to read radar detections from'
+                description='The Odometry topic to read odometry information from'
             )
         )
         self.declare_parameter(
@@ -95,7 +95,7 @@ class VelFilter(Node):
             value='/radar_combined/dynamic_points',
             descriptor=ParameterDescriptor(
                 type=ParameterType.PARAMETER_STRING,
-                description='The pointCloud2 topic to read radar detections from'
+                description='The pointCloud2 topic to publish dynamic read radar detections to'
             )
         )
         self.declare_parameter(
@@ -103,7 +103,7 @@ class VelFilter(Node):
             value='/radar_combined/static_points',
             descriptor=ParameterDescriptor(
                 type=ParameterType.PARAMETER_STRING,
-                description='The pointCloud2 topic to read radar detections from'
+                description='The pointCloud2 topic to publish static radar detections to'
             )
         )
         self.declare_parameter(
@@ -257,23 +257,6 @@ class VelFilter(Node):
         )
 
         return point_cloud
-    
-    def np_to_pointcloud2(self,points:np.ndarray,header:Header,fields:list)->PointCloud2:
-        """Convert a numpy array into a pointcloud2 object in the base_frame
-
-        Args:
-            points (np.ndarray): array of points to convert to a numpy array
-
-        Returns:
-            PointCloud2: PointCloud2 object of points from the numpy array
-        """
-        msg = pc2.create_cloud(
-            header=header,
-            fields=fields,
-            points=points
-        )
-
-        return msg
 
 
 def main(args=None):

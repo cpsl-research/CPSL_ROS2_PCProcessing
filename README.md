@@ -1,48 +1,23 @@
 # CPSL_ROS2_PCProcessing
 A collection of ROS2 packages for processing radar and lidar point clouds using existing CPSL python modules
 
+## Software Notes
+
+The following code was used to implement a SLAM and navigation stack for the CPSL's UAVs (coming soon) and UGV platforms. The specific software versions used are as follows:
+
+- Gazebo Version (if simulating): GZ Harmonic
+- ROS Version: ROS2 Jazzy
+- Ubuntu Version: Ubuntu 24.04
+- Python Version: Python 3.12
+
 ## Installation
 In order for the code to work properly, the following steps are required
-1. Install correct version of python
-2. Install the virtual environment for CPSL_ROS2_PCProcessing using Poetry
-3. Install the ROS2 nodes as required
+1. Install the virtual environment for CPSL_ROS2_PCProcessing using Poetry
+2. Install the ROS2 nodes as required
 
-### 1. Setup Python environment
 
-#### Deadsnakes PPA (requires sudo access)
-1. On ubuntu systems, start by adding the deadsnakes PPA to add the required version of python.
-```
-sudo add-apt-repository ppa:deadsnakes/ppa
-```
 
-2. Update the package list
-```
-sudo apt update
-```
-
-3. Install python 3.10 along with the required development dependencies
-```
-sudo apt install python3.10 python3.10-dev
-```
-
-The following resources may be helpful [Deadsnakes PPA description](https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa), [Tutorial on Deadsnakes on Ubuntu](https://preocts.github.io/python/20221230-deadsnakes/)
-
-#### Conda (Backup)
-1. If conda isn't already installed, follow the [Conda Install Instructions](https://conda.io/projects/conda/en/stable/user-guide/install/index.html) to install conda
-2. Use the following command to download the conda installation (for linux)
-```
-wget https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
-```
-3. Run the conda installation script (-b for auto accepting the license)
-```
-bash Anaconda3-2023.09-0-Linux-x86_64.sh -b
-```
-3. Once conda is installed, create a new conda environment with the correct version of python
-```
-conda create -n odometry python=3.10
-```
-
-### 2. Clone CPSL_ROS2_PC_Processing
+### 1. Clone CPSL_ROS2_PC_Processing
 ```
 git clone https://github.com/cpsl-research/CPSL_TI_Radar_ROS2
 ```
@@ -51,7 +26,7 @@ Initialize the submodules
 cd CPSL_ROS2_PC_Processing
 git submodule update --init
 ```
-### 3. Install CPSL_ROS2_PC_Processing using Poetry
+### 2. Install CPSL_ROS2_PC_Processing using Poetry
 
 #### Installing Poetry 1.8.4:
  
@@ -69,17 +44,22 @@ If you are using poetry over an ssh connection or get an error in the following 
 ```
 export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
 ```
-### Installing CPSL_ROS2_PC_Processing (with torch)
-If your machine supports it Navigate to the odometry foler (this folder) and execute the following command
+#### Installing CPSL_ROS2_PC_Processing
 
+To install the package using poetry, use the following steps
+1. Configure poetry projects to be able to use the system packages
+```
+poetry config virtualenvs.options.system-site-packages true
+```
+
+2. Install the virtual environment
 ```
 cd CPSL_ROS2_PC_Processing
-poetry install --with submodules,torch
+poetry install --extras "submodules"
 ```
 
 
-
-### Installing CPSL_ROS2_PC_Processing (with torch separately)
+#### Installing CPSL_ROS2_PC_Processing (backup if torch doesn't install correctly)
 If your machine supports it Navigate to the odometry foler (this folder) and execute the following command
 
 ```
@@ -109,7 +89,7 @@ pip3 install torch torchvision torchaudio
 exit
 ```
 
-### Installing torch-cluster
+#### Installing torch-cluster
 Currently, torch-cluster is required to run everything. At the current moment though, this cannot be installed using poetry. To overcome this, run the following commands to correctly install everything. Here, replace ${CUDA} with cpu, cu118, cu121, or cu124 depending on cuda version. While this command should work for most systems, see the following page for more specific instructions: [torch-cluster github](https://github.com/rusty1s/pytorch_cluster) 
 ```
 cd odometry
@@ -143,6 +123,53 @@ If the pyproject.toml file is updated, the poetry installation must also be upda
 poetry lock --no-update
 poetry install
 ```
+
+### 3. Building ROS2 nodes
+To build the ROS2 nodes, complete the following steps:
+1. go into the CPSL_ROS2_PC_Processing directory
+```
+cd CPSL_ROS2_PC_Processing
+```
+2. activate the poetry shell
+```
+poetry shell
+```
+3. install the package
+```
+python -m colcon build --symlink-install
+```
+4. Once complete source the setup.bash file
+```
+source install/setup.bash
+```
+
+## Tutorials
+
+### 1. Running the ROS2 nodes on a UGV
+To run the ROS2 nodes for the CPSL_ROS2_PC_Processing packages, complete the following steps:
+1. go into the CPSL_ROS2_PC_Processing directory
+```
+cd CPSL_ROS2_PC_Processing
+```
+2. activate the poetry shell
+```
+poetry shell
+```
+4. Source the setup.bash file
+```
+source install/setup.bash
+```
+5. Finally, launch the ugv_gnn_bringup file
+```
+ros2 launch pc_processing ugv_gnn_bringup.launch.py
+```
+
+When launching, the following parameters can also be set by using the `parameter:=value` notation after the name of the launch file:
+| **Parameter** | **Default** | **Description** |
+|----------------|--------------|------------------------------------------------------|
+|`namespace`|''|The robot's namespace|
+|`param_file`| 'ugv_gnn.yaml'|YAML file with parameters for the nodes in the configs directory|
+
 
 ### Using .env for Project Directories
 
