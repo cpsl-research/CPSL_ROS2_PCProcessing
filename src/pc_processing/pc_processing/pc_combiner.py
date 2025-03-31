@@ -29,9 +29,9 @@ class PCCombiner(Node):
 
         #defining qos profile
         self.qos_profile = QoSProfile(
-            reliability=QoSReliabilityPolicy.RELIABLE,
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
             history=QoSHistoryPolicy.KEEP_LAST,
-            depth=1
+            depth=5
         )
 
         #keeping track of the fields in the point clouds

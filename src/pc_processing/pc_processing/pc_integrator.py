@@ -56,7 +56,7 @@ class GNNPCIntegrator(Node):
         self.qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.BEST_EFFORT,
             history=QoSHistoryPolicy.KEEP_LAST,
-            depth=1
+            depth=5
         )
 
         #subscribers
@@ -66,10 +66,16 @@ class GNNPCIntegrator(Node):
         #publishers
         self.point_cloud_pub:rclpy.publisher.Publisher = None
 
-        self.tf_buffer = Buffer()
+        #tf publishing
+        self.tf_buffer = Buffer(cache_time=rclpy.duration.Duration(seconds=10))
         self.tf_listener = TransformListener(
             buffer=self.tf_buffer,
-            node=self)
+            node=self,
+            spin_thread=True,
+            qos=self.qos_profile)
+        
+        #storing last odom message
+        self.odom_sub_latest:Odometry = None
 
         #vehicle velocity variable
         self.current_pose:Pose = Pose()
@@ -248,41 +254,68 @@ class GNNPCIntegrator(Node):
         Args:
             msg (PointCloud2): the most recent point cloud from the subscription
         """
-        if self.vehicle_moving:
-            #get the points as a np array
-            pc_np = self.pointcloud2_to_np(msg)
-
-            # try:
-            #     transform = self.tf_buffer.lookup_transform(
-            #         target_frame="odom",
-            #         source_frame="base_link",
-            #         time=msg.header.stamp,
-            #         timeout=rclpy.duration.Duration(seconds=0.1)
-            #     )
-
-            #     current_pose = Pose(
-            #         position=Position(
-            #             x=transform.transform.translation.x,
-            #             y=transform.transform.translation.y,
-            #             z=transform.transform.translation.z,
-            #         ),
-            #         orientation=Orientation(
-            #             qx=transform.transform.rotation.x,
-            #             qy=transform.transform.rotation.y,
-            #             qz=transform.transform.rotation.z,
-            #             qw=transform.transform.rotation.w
-            #         )
-            #     )
-            # except Exception as e:
-            #     self.get_logger().info("could get transformation from base->odom: {}".format(e))
-
-            #     return None  
-
-            #add code here to process the point cloud
-            self.pc_integrator.add_points(
-                static_points=pc_np,
-                current_pose=self.current_pose
+        try:
+            transform = self.tf_buffer.lookup_transform(
+                target_frame="odom",
+                source_frame="base_link",
+                time=rclpy.time.Time(seconds=0,nanoseconds=0),#rclpy.time.Time.from_msg(msg.header.stamp),
+                timeout=rclpy.duration.Duration(
+                    seconds=0.0,
+                    nanoseconds=int(0.01 * 1e9)
+                )
             )
+
+            current_pose = Pose(
+                position=Position(
+                    x=transform.transform.translation.x,
+                    y=transform.transform.translation.y,
+                    z=transform.transform.translation.z,
+                ),
+                orientation=Orientation(
+                    qx=transform.transform.rotation.x,
+                    qy=transform.transform.rotation.y,
+                    qz=transform.transform.rotation.z,
+                    qw=transform.transform.rotation.w
+                )
+            )
+
+            sec_diff = msg.header.stamp.sec - transform.header.stamp.sec
+            nsec_dif = msg.header.stamp.nanosec - transform.header.stamp.nanosec
+
+            self.get_logger().info("Time diff between radar and tf message: {}".format(
+                sec_diff + nsec_dif * 1e-9
+            ))
+
+            if self.vehicle_moving:
+                pc_np = self.pointcloud2_to_np(msg)
+
+                #add code here to process the point cloud
+                self.pc_integrator.add_points(
+                    static_points=pc_np,
+                    current_pose=current_pose
+                )
+        except Exception as e:
+            self.get_logger().info("could get transformation from odom->base: {}".format(e))
+
+
+        # if self.vehicle_moving:
+        #     #get the points as a np array
+        #     pc_np = self.pointcloud2_to_np(msg)
+        #     #     return None  
+
+        #     #add code here to process the point cloud
+        #     self.pc_integrator.add_points(
+        #         static_points=pc_np,
+        #         current_pose=self.current_pose
+        #     )
+
+        #     # log the time difference between the odom and pc2 message
+        #     # sec_diff = msg.header.stamp.sec - self.odom_sub_latest.header.stamp.sec
+        #     # nsec_dif = msg.header.stamp.nanosec - self.odom_sub_latest.header.stamp.sec
+
+        #     # self.get_logger().info("Time diff between radar and tf message: {}".format(
+        #     #     sec_diff + nsec_dif * 1e-9
+        #     # ))
 
         #get the latest point cloud
         processed_pc = self.pc_integrator.get_latest_pc()
@@ -342,6 +375,9 @@ class GNNPCIntegrator(Node):
                 qw=msg.pose.pose.orientation.w
             )
         )
+
+        self.odom_sub_latest = msg
+
         
         return
 
