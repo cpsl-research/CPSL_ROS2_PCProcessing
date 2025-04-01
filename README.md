@@ -19,12 +19,18 @@ In order for the code to work properly, the following steps are required
 
 ### 1. Clone CPSL_ROS2_PC_Processing
 ```
-git clone https://github.com/cpsl-research/CPSL_TI_Radar_ROS2
+git clone https://github.com/cpsl-research/CPSL_ROS2_PCProcessing
 ```
 Initialize the submodules
 ```
 cd CPSL_ROS2_PC_Processing
 git submodule update --init
+```
+
+Finally, install all required dependencies for this package
+```
+cd CPSL_ROS2_PCProcessing
+rosdep install -q -y -r --from-paths src --ignore-src --rosdistro jazzy
 ```
 ### 2. Install CPSL_ROS2_PC_Processing using Poetry
 
@@ -52,7 +58,12 @@ To install the package using poetry, use the following steps
 poetry config virtualenvs.options.system-site-packages true
 ```
 
-2. Install the virtual environment
+2. If you're using conda, you need to make sure that you're installing all python packages with the OS python version (instead of the conda version). To do this, use the following command (update 3.12 to whatever python installation ROS2 is using)
+```
+poetry env use /usr/bin/python3.12
+```
+
+3. Install the virtual environment
 ```
 cd CPSL_ROS2_PC_Processing
 poetry install --extras "submodules"
@@ -63,7 +74,7 @@ poetry install --extras "submodules"
 If your machine supports it Navigate to the odometry foler (this folder) and execute the following command
 
 ```
-poetry install --with submodules
+poetry install
 ```
 
 Follow the following instructions to install the correct version of pytorch for your system.
