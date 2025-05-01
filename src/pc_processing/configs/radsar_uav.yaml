@@ -1,0 +1,7 @@
+radsar_processor:
+  ros__parameters:
+    point_cloud_sub_topic: "radar_0/adc_data_cube"
+    radar_config_path: "" #override in launch file
+    point_cloud_pub_topic: "radar_0/radsar_point_cloud"
+    odom_sub_topic: "odom"
+    state_dict_path: "" #use launch file to specify this

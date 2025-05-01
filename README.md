@@ -103,7 +103,7 @@ exit
 #### Installing torch-cluster
 Currently, torch-cluster is required to run everything. At the current moment though, this cannot be installed using poetry. To overcome this, run the following commands to correctly install everything. Here, replace ${CUDA} with cpu, cu118, cu121, or cu124 depending on cuda version. While this command should work for most systems, see the following page for more specific instructions: [torch-cluster github](https://github.com/rusty1s/pytorch_cluster) 
 ```
-cd odometry
+cd CPSL_ROS2_PCProcessing
 poetry shell
 pip install torch-cluster -f https://data.pyg.org/whl/torch-2.4.0+${CUDA}.html
 ```
