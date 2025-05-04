@@ -28,8 +28,8 @@ setup(
         'console_scripts': [
             'pc_combiner= pc_processing.pc_combiner:main',
             'vel_filtering= pc_processing.vel_filtering:main',
-            'pc_integrator= pc_processing.pc_integrator:main',
-            'radsar_processor= pc_processing.radsar_processor:main'
+            'pc_integrator_gnn= pc_processing.pc_integrator_gnn:main',
+            'pc_integrator= pc_processing.pc_integrator:main'
         ],
     },
 )

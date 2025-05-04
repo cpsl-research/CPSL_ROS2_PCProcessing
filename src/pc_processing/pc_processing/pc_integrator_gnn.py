@@ -29,10 +29,9 @@ from mmwave_model_integrator.torch_training.models.SAGEGnn import SageGNNClassif
 #point cloud processing modules
 from odometry.point_cloud_processing._point_cloud_integrator import _PointCloudIntegrator
 from odometry.point_cloud_processing.pc_grid.probabilistic_pc_grid_gnn import ProbabilisticPCGridGNN
-from odometry.point_cloud_processing.pc_grid.probabilistic_pc_grid import ProbabilisticPCGrid
 from odometry.point_cloud_processing.pc_grid.historical_pc_grid import HistoricalPCGrid
 
-class PCIntegrator(Node):
+class GNNPCIntegrator(Node):
     """A node that subscribesto a radar point cloud with [x,y,z,vel] information and 
     a vehicle's odometry to publish a topic of "static" detections and a topic of 
     "dynamic" detections
@@ -96,10 +95,20 @@ class PCIntegrator(Node):
     
     def init_pc_integrator(self):
 
-        probabilistic_pc_grid = ProbabilisticPCGrid(
+        runner = GNNRunner(
+            model = SageGNNClassifier(
+                in_channels=4,
+                hidden_channels=16,
+                out_channels=1
+            ), state_dict_path=self.state_dict_path,
+            cuda_device='cpu',
+            edge_radius=10.0
+        )
+
+        probabilistic_pc_grid = ProbabilisticPCGridGNN(
+            runner=runner,
             grid_resolution_m=self.grid_resolution_m,
             grid_max_distance_m=self.grid_max_distance_m,
-            occupancy_threshold=0.15,
             num_frames_history=self.num_frames_history
         )
 
@@ -112,7 +121,7 @@ class PCIntegrator(Node):
         self.pc_integrator = _PointCloudIntegrator(
             probabilistic_pc_grid=probabilistic_pc_grid,
             historical_pc_grid=historical_pc_grid,
-            min_detection_radius=2.0,
+            min_detection_radius=1.0,
             max_detection_radius=20.0
         )
 
@@ -247,8 +256,8 @@ class PCIntegrator(Node):
         """
         try:
             transform = self.tf_buffer.lookup_transform(
-                target_frame="cpsl_ugv_1/odom",
-                source_frame="cpsl_ugv_1/base_link",
+                target_frame="odom",
+                source_frame="base_link",
                 time=rclpy.time.Time(seconds=0,nanoseconds=0),#rclpy.time.Time.from_msg(msg.header.stamp),
                 timeout=rclpy.duration.Duration(
                     seconds=0.0,
@@ -422,7 +431,7 @@ class PCIntegrator(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    pc_integrator = PCIntegrator()
+    pc_integrator = GNNPCIntegrator()
 
     rclpy.spin(pc_integrator)
 

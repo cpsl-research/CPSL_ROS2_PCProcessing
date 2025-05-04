@@ -11,7 +11,7 @@ vel_filtering:
     dynamic_point_cloud_pub_topic: "radar_combined/dynamic_points"
     static_point_cloud_pub_topic: "radar_combined/static_points"
     v_thresh: 0.05
-pc_integrator:
+pc_integrator_gnn:
   ros__parameters:
     point_cloud_sub_topic: "radar_combined/static_points"
     odom_sub_topic: "odom"

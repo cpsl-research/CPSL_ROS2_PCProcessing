@@ -21,7 +21,7 @@ pkg_pc_processing = get_package_share_directory("pc_processing")
 ARGUMENTS = [
     DeclareLaunchArgument('namespace', default_value='',
                           description='namespace'),
-    DeclareLaunchArgument('param_file', default_value='RaGNNarok_gnn.yaml',
+    DeclareLaunchArgument('param_file', default_value='RaGNNarok_prob.yaml',
                           description='.yaml config file in the configs folder'),
     DeclareLaunchArgument('model_state_dict', default_value='Sage_10fp_20fh_0_50_th_5mRng_0_2_res.pth',
                           description='.pth config file in the model_state_dicts folder'),
@@ -69,8 +69,8 @@ def launch_setup(context, *args, **kwargs):
     bringup_group = GroupAction([
         PushRosNamespace(namespace),
 
-        SetRemap('/tf', namespace_str + '/tf'),
-        SetRemap('/tf_static', namespace_str + '/tf_static'),
+        # SetRemap('/tf', namespace_str + '/tf'),
+        # SetRemap('/tf_static', namespace_str + '/tf_static'),
 
         #launch the point cloud combiner node
         Node(
@@ -89,8 +89,8 @@ def launch_setup(context, *args, **kwargs):
         ),
         Node(
             package='pc_processing',
-            executable='pc_integrator_gnn',
-            name='pc_integrator_gnn',
+            executable='pc_integrator',
+            name='pc_integrator',
             output='screen',
             parameters=[configured_params],
         ),
