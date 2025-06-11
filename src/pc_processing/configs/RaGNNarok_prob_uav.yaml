@@ -1,0 +1,24 @@
+pc_combiner:
+  ros__parameters:
+    base_frame: "cpsl_uav_1/base_link"
+    in_point_cloud_topics: ["radar_0/detected_points"]
+    # in_point_cloud_topics: ["radar_0/detected_points", "radar_1/detected_points"]
+    out_point_cloud_topic: "radar_combined/detected_points"
+    update_rate: 20.0
+vel_filtering:
+  ros__parameters:
+    point_cloud_sub_topic: "radar_combined/detected_points"
+    odom_sub_topic: "odom"
+    dynamic_point_cloud_pub_topic: "radar_combined/dynamic_points"
+    static_point_cloud_pub_topic: "radar_combined/static_points"
+    v_thresh: 0.05
+pc_integrator:
+  ros__parameters:
+    point_cloud_sub_topic: "radar_combined/static_points"
+    odom_sub_topic: "odom"
+    point_cloud_pub_topic: "radar_combined/integrated_pc"
+    grid_resolution_m: 0.10 #was 0.2
+    grid_max_distance_m: 5.0
+    num_frames_history: 20
+    num_frames_persistance: 1.0
+    state_dict_path: "" #use launch file to specify this

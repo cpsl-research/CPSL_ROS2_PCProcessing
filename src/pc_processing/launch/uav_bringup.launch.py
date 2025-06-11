@@ -21,7 +21,7 @@ pkg_pc_processing = get_package_share_directory("pc_processing")
 ARGUMENTS = [
     DeclareLaunchArgument('namespace', default_value='',
                           description='namespace'),
-    DeclareLaunchArgument('param_file', default_value='RaGNNarok_gnn_uav.yaml',
+    DeclareLaunchArgument('param_file', default_value='RaGNNarok_prob_uav.yaml',
                           description='.yaml config file in the configs folder'),
     DeclareLaunchArgument('model_state_dict', default_value='Sage_10fp_20fh_0_50_th_5mRng_0_2_res.pth',
                           description='.pth config file in the model_state_dicts folder'),
@@ -95,8 +95,8 @@ def launch_setup(context, *args, **kwargs):
         ),
         Node(
             package='pc_processing',
-            executable='pc_integrator_gnn',
-            name='pc_integrator_gnn',
+            executable='pc_integrator',
+            name='pc_integrator',
             output='screen',
             parameters=[configured_params],
         ),
