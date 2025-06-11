@@ -19,5 +19,5 @@ pc_integrator:
     grid_resolution_m: 0.10 #was 0.2
     grid_max_distance_m: 5.0
     num_frames_history: 20
-    num_frames_persistance: 1.0
+    num_frames_persistance: 10.0
     state_dict_path: "" #use launch file to specify this
