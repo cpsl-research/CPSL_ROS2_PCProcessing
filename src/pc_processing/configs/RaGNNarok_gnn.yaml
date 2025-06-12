@@ -1,6 +1,6 @@
 pc_combiner:
   ros__parameters:
-    base_frame: "base_link"
+    base_frame: "cpsl_ugv_1/base_link"
     in_point_cloud_topics: ["radar_0/detected_points", "radar_1/detected_points"]
     out_point_cloud_topic: "radar_combined/detected_points"
     update_rate: 20.0

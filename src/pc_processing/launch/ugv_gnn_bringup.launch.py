@@ -41,8 +41,14 @@ def launch_setup(context, *args, **kwargs):
 
     #updating paths
     namespace_str = namespace.perform(context)
-    if (namespace_str and not namespace_str.startswith('/')):
-        namespace_str = '/' + namespace_str
+    if (namespace_str):
+        if not namespace_str.startswith('/'):
+            namespace_str = '/' + namespace_str
+        tf_prefix = namespace_str.strip("/")
+        laser_scan_target_frame = '{}/base_link'.format(tf_prefix)
+    else:
+        tf_prefix = ""
+        laser_scan_target_frame = "base_link"
     
     param_file_str = param_file.perform(context)
     param_file_path = PathJoinSubstitution([pkg_pc_processing, 'configs', param_file_str])
@@ -69,8 +75,8 @@ def launch_setup(context, *args, **kwargs):
     bringup_group = GroupAction([
         PushRosNamespace(namespace),
 
-        SetRemap('/tf', namespace_str + '/tf'),
-        SetRemap('/tf_static', namespace_str + '/tf_static'),
+        # SetRemap('/tf', namespace_str + '/tf'),
+        # SetRemap('/tf_static', namespace_str + '/tf_static'),
 
         #launch the point cloud combiner node
         Node(
@@ -108,9 +114,9 @@ def launch_setup(context, *args, **kwargs):
                 {'angle_increment':3.141592653589793/90}, #pi/180
                 {'queue_size':10},
                 {'scan_time':1.0/20.0},
-                {'range_min':1.0},
-                {'range_max':5.0},
-                {'target_frame':''}, #use lidar's point cloud frame
+                {'range_min':0.5},
+                {'range_max':10.0},
+                {'target_frame':laser_scan_target_frame}, #use radar's point cloud frame
                 {'transform_tolerance':0.01},
                 {'use_inf':True},
             ],
