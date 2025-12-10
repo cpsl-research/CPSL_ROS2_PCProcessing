@@ -104,8 +104,8 @@ class PCIntegrator(Node):
         )
 
         historical_pc_grid = HistoricalPCGrid(
-            grid_resolution_m=self.grid_resolution_m,
-            grid_max_distance_m=self.grid_max_distance_m,
+            grid_resolution_m=0.05,
+            grid_max_distance_m=20.0,
             num_frames_persistance=self.num_frames_persistance
         )
 
@@ -167,15 +167,15 @@ class PCIntegrator(Node):
             name='num_frames_history',
             value=80,
             descriptor=ParameterDescriptor(
-                type=ParameterType.PARAMETER_DOUBLE,
+                type=ParameterType.PARAMETER_INTEGER,
                 description='The number of frames to use when generating the probabilistic occupancy grid maps'
             )
         )
         self.declare_parameter(
             name='num_frames_persistance',
-            value=1.0,
+            value=1,
             descriptor=ParameterDescriptor(
-                type=ParameterType.PARAMETER_DOUBLE,
+                type=ParameterType.PARAMETER_INTEGER,
                 description='The number of frames that detections persist once detected'
             )
         )
@@ -273,9 +273,9 @@ class PCIntegrator(Node):
             sec_diff = msg.header.stamp.sec - transform.header.stamp.sec
             nsec_dif = msg.header.stamp.nanosec - transform.header.stamp.nanosec
 
-            self.get_logger().info("Time diff between radar and tf message: {}".format(
-                sec_diff + nsec_dif * 1e-9
-            ))
+            # self.get_logger().info("Time diff between radar and tf message: {}".format(
+            #     sec_diff + nsec_dif * 1e-9
+            # ))
 
             if self.vehicle_moving:
                 pc_np = self.pointcloud2_to_np(msg)

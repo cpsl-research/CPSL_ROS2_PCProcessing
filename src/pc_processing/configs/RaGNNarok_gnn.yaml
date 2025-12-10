@@ -19,5 +19,5 @@ pc_integrator_gnn:
     grid_resolution_m: 0.10
     grid_max_distance_m: 5.0
     num_frames_history: 20
-    num_frames_persistance: 10.0
+    num_frames_persistance: 250.0
     state_dict_path: "" #use launch file to specify this

@@ -16,8 +16,8 @@ pc_integrator:
     point_cloud_sub_topic: "radar_combined/static_points"
     odom_sub_topic: "odom"
     point_cloud_pub_topic: "radar_combined/integrated_pc"
-    grid_resolution_m: 0.10 #was 0.2
+    grid_resolution_m: 0.20 #was 0.2
     grid_max_distance_m: 5.0
-    num_frames_history: 20
-    num_frames_persistance: 10.0
+    num_frames_history: 30
+    num_frames_persistance: 40
     state_dict_path: "" #use launch file to specify this
