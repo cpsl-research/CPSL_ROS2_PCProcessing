@@ -1,7 +1,7 @@
 pc_combiner:
   ros__parameters:
     base_frame: "cpsl_uav_1/base_link"
-    in_point_cloud_topics: ["radar_0/detected_points"]
+    in_point_cloud_topics: ["front_radar/detected_points", "back_radar/detected_points"]
     out_point_cloud_topic: "radar_combined/detected_points"
     update_rate: 20.0
 vel_filtering:
