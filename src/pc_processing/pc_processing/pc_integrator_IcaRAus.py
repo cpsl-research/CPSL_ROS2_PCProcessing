@@ -24,15 +24,12 @@ from geometries.pose.position import Position
 from mmwave_model_integrator.input_encoders._node_encoder import _NodeEncoder
 from mmwave_model_integrator.ground_truth_encoders._gt_node_encoder import _GTNodeEncoder
 from mmwave_model_integrator.model_runner.gnn_runner import GNNRunner
-from mmwave_model_integrator.torch_training.models.SAGEGnn import SageGNNClassifier
+from mmwave_model_integrator.torch_training.models.TwoStreamSpatioTemporalGnn import TwoStreamSpatioTemporalGnn
 
 #point cloud processing modules
-from odometry.point_cloud_processing._point_cloud_integrator import _PointCloudIntegrator
-from odometry.point_cloud_processing.pc_grid.probabilistic_pc_grid_gnn import ProbabilisticPCGridGNN
-from odometry.point_cloud_processing.pc_grid.probabilistic_pc_grid import ProbabilisticPCGrid
-from odometry.point_cloud_processing.pc_grid.historical_pc_grid import HistoricalPCGrid
+from odometry.point_cloud_processing.accumulation.integrators._pc_integrator_gnn_runner import _PointCloudIntegratorGnnRunner
 
-class PCIntegrator(Node):
+class GNNPCIntegrator(Node):
     """A node that subscribesto a radar point cloud with [x,y,z,vel] information and 
     a vehicle's odometry to publish a topic of "static" detections and a topic of 
     "dynamic" detections
@@ -83,7 +80,7 @@ class PCIntegrator(Node):
         self.vehicle_moving:bool = False
 
         #point cloud integrator object
-        self.pc_integrator:_PointCloudIntegrator = None
+        self.pc_integrator:_PointCloudIntegratorGnnRunner = None
 
         #initialize the node
         self.init_params() #parameters
@@ -96,25 +93,33 @@ class PCIntegrator(Node):
     
     def init_pc_integrator(self):
 
-        probabilistic_pc_grid = ProbabilisticPCGrid(
-            grid_resolution_m=self.grid_resolution_m,
-            grid_max_distance_m=self.grid_max_distance_m,
-            occupancy_threshold=0.20,
-            num_frames_history=self.num_frames_history
+        model = TwoStreamSpatioTemporalGnn(
+            hidden_channels=28,
+            out_channels=1,
+            k=4, #original is 40
+            dropout=0.1
         )
 
-        historical_pc_grid = HistoricalPCGrid(
-            grid_resolution_m=0.05,
-            grid_max_distance_m=20.0,
-            num_frames_persistance=self.num_frames_persistance
+        runner = GNNRunner(
+            model= model,
+            state_dict_path = self.state_dict_path,
+            cuda_device="cpu",
+            edge_radius=10.0, #unused for this model
+            enable_downsampling=True,
+            downsample_keep_ratio=0.50,
+            downsample_min_points=300,
+            use_sigmoid=True
         )
 
-        self.pc_integrator = _PointCloudIntegrator(
-            probabilistic_pc_grid=probabilistic_pc_grid,
-            historical_pc_grid=historical_pc_grid,
-            min_detection_radius=2.0,
-            max_detection_radius=20.0
+        self.pc_integrator = _PointCloudIntegratorGnnRunner(
+            gnn_runner=runner,
+            num_frames_history=self.num_frames_history,
+            min_detection_radius=1.0,
+            max_detection_radius=4.0,
+            normalize_frames=True
         )
+
+        return
 
     
     def init_params(self):
@@ -167,7 +172,7 @@ class PCIntegrator(Node):
             name='num_frames_history',
             value=80,
             descriptor=ParameterDescriptor(
-                type=ParameterType.PARAMETER_INTEGER,
+                type=ParameterType.PARAMETER_DOUBLE,
                 description='The number of frames to use when generating the probabilistic occupancy grid maps'
             )
         )
@@ -175,7 +180,7 @@ class PCIntegrator(Node):
             name='num_frames_persistance',
             value=1,
             descriptor=ParameterDescriptor(
-                type=ParameterType.PARAMETER_INTEGER,
+                type=ParameterType.PARAMETER_DOUBLE,
                 description='The number of frames that detections persist once detected'
             )
         )
@@ -309,7 +314,7 @@ class PCIntegrator(Node):
         #     # ))
 
         #get the latest point cloud
-        processed_pc = self.pc_integrator.get_latest_pc()
+        processed_pc = self.pc_integrator.get_points()
 
         if processed_pc.shape[0] > 0:
             new_msg = pc2.create_cloud(
@@ -422,7 +427,7 @@ class PCIntegrator(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    pc_integrator = PCIntegrator()
+    pc_integrator = GNNPCIntegrator()
 
     rclpy.spin(pc_integrator)
 

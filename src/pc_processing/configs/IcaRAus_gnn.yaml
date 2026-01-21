@@ -11,7 +11,7 @@ vel_filtering:
     dynamic_point_cloud_pub_topic: "radar_combined/dynamic_points"
     static_point_cloud_pub_topic: "radar_combined/static_points"
     v_thresh: 0.05
-pc_integrator_gnn:
+pc_integrator_IcaRAus:
   ros__parameters:
     point_cloud_sub_topic: "radar_combined/static_points"
     odom_sub_topic: "odom"
@@ -19,5 +19,5 @@ pc_integrator_gnn:
     grid_resolution_m: 0.10
     grid_max_distance_m: 5.0
     num_frames_history: 20
-    num_frames_persistance: 250.0
-    state_dict_path: "" #use launch file to specify this
+    num_frames_persistance: 250
+    state_dict_path: "/home/cpsl/CPSL_ROS2_PCProcessing/src/pc_processing/configs/IcaRAus_gnn.yaml" #use launch file to specify this

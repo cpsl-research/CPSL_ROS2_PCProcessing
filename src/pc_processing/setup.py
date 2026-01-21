@@ -29,6 +29,7 @@ setup(
             'pc_combiner= pc_processing.pc_combiner:main',
             'vel_filtering= pc_processing.vel_filtering:main',
             'pc_integrator_gnn= pc_processing.pc_integrator_gnn:main',
+            'pc_integrator_IcaRAus= pc_processing.pc_integrator_IcaRAus:main',
             'pc_integrator= pc_processing.pc_integrator:main'
         ],
     },
