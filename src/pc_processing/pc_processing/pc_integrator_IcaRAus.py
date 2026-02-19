@@ -253,7 +253,8 @@ class GNNPCIntegrator(Node):
         try:
             transform = self.tf_buffer.lookup_transform(
                 target_frame=f"{self.get_namespace().strip("/")}/odom",
-                source_frame=f"{self.get_namespace().strip("/")}/base_link",
+                # source_frame=f"{self.get_namespace().strip("/")}/base_link",
+                source_frame=f"{self.get_namespace().strip("/")}/base_footprint",
                 time=rclpy.time.Time(seconds=0,nanoseconds=0),#rclpy.time.Time.from_msg(msg.header.stamp),
                 timeout=rclpy.duration.Duration(
                     seconds=0.0,
