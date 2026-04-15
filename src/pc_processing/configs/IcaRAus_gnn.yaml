@@ -18,6 +18,6 @@ pc_integrator_IcaRAus:
     point_cloud_pub_topic: "radar_combined/integrated_pc"
     grid_resolution_m: 0.10
     grid_max_distance_m: 5.0
-    num_frames_history: 20
+    num_frames_history: 50
     num_frames_persistance: 250
     state_dict_path: "/home/cpsl/CPSL_ROS2_PCProcessing/src/pc_processing/configs/IcaRAus_gnn.yaml" #use launch file to specify this

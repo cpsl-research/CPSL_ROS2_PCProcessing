@@ -21,10 +21,8 @@ pkg_pc_processing = get_package_share_directory("pc_processing")
 ARGUMENTS = [
     DeclareLaunchArgument('namespace', default_value='',
                           description='namespace'),
-    DeclareLaunchArgument('param_file', default_value='IcaRAus_gnn.yaml',
+    DeclareLaunchArgument('param_file', default_value='uav_IcaRAus_densifying_dynamic_edge_conv_gnn.yaml',
                           description='.yaml config file in the configs folder'),
-    DeclareLaunchArgument('model_state_dict', default_value='IcaRAus_TwoStreamSpatioTemporalGnn_IcaRAus_ds_50fh_k4.pth',
-                          description='.pth config file in the model_state_dicts folder'),
     DeclareLaunchArgument('scan_enable',
                           default_value='false',
                           choices=['true','false'],
@@ -32,11 +30,21 @@ ARGUMENTS = [
 ]  
 
 def launch_setup(context, *args, **kwargs):
+    """
+    Callback configuring the launch namespace and parameter mappings upon evaluating launch contexts.
+
+    Args:
+        context (launch.LaunchContext): Provides active launch settings needed for parameter evaluation.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        list[launch.actions.Action]: A list describing the instantiated node configuration groupings.
+    """
 
     #load parameters
     namespace = LaunchConfiguration('namespace')
     param_file = LaunchConfiguration('param_file')
-    model_state_dict = LaunchConfiguration('model_state_dict')
     scan_enable = LaunchConfiguration('scan_enable')
 
     #updating paths
@@ -45,20 +53,15 @@ def launch_setup(context, *args, **kwargs):
         if not namespace_str.startswith('/'):
             namespace_str = '/' + namespace_str
         tf_prefix = namespace_str.strip("/")
-        laser_scan_target_frame = '{}/base_link'.format(tf_prefix)
+        laser_scan_target_frame = '{}/base_footprint'.format(tf_prefix)
     else:
         tf_prefix = ""
-        laser_scan_target_frame = "base_link"
+        laser_scan_target_frame = "base_footprint"
     
     param_file_str = param_file.perform(context)
     param_file_path = PathJoinSubstitution([pkg_pc_processing, 'configs', param_file_str])
 
-    model_state_dict_str = model_state_dict.perform(context)
-    model_state_dict_path = PathJoinSubstitution([pkg_pc_processing,'model_state_dicts', model_state_dict_str])
-
-    param_substitutions = {
-        "state_dict_path":model_state_dict_path
-    }
+    param_substitutions = {}
 
     #update the parameter file with 
     configured_params = ParameterFile(
@@ -75,31 +78,14 @@ def launch_setup(context, *args, **kwargs):
     bringup_group = GroupAction([
         PushRosNamespace(namespace),
 
-        # SetRemap('/tf', namespace_str + '/tf'),
-        # SetRemap('/tf_static', namespace_str + '/tf_static'),
+        Node(
+            package='pc_processing',
+            executable='IcaRAus_densifying_dynamic_edge_conv_gnn',
+            name='IcaRAus_densifying_dynamic_edge_conv_gnn',
+            output='screen',
+            parameters=[configured_params],
+        ),
 
-        #launch the point cloud combiner node
-        Node(
-            package='pc_processing',
-            executable='pc_combiner',
-            name='pc_combiner',
-            output='screen',
-            parameters=[configured_params],
-        ),
-        Node(
-            package='pc_processing',
-            executable='vel_filtering',
-            name='vel_filtering',
-            output='screen',
-            parameters=[configured_params],
-        ),
-        # Node(
-        #     package='pc_processing',
-        #     executable='pc_integrator_IcaRAus',
-        #     name='pc_integrator_IcaRAus',
-        #     output='screen',
-        #     parameters=[configured_params],
-        # ),
         #Launch laserscan topic
         Node(
             package='pointcloud_to_laserscan',
@@ -132,6 +118,12 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
+    """
+    Generates the overarching launch directives and execution pipeline.
+
+    Returns:
+        launch.LaunchDescription: System-level wrapper object aggregating node lifecycle triggers.
+    """
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(OpaqueFunction(function=launch_setup))
     return ld

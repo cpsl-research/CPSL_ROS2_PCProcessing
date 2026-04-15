@@ -30,7 +30,8 @@ setup(
             'vel_filtering= pc_processing.vel_filtering:main',
             'pc_integrator_gnn= pc_processing.pc_integrator_gnn:main',
             'pc_integrator_IcaRAus= pc_processing.pc_integrator_IcaRAus:main',
-            'pc_integrator= pc_processing.pc_integrator:main'
+            'pc_integrator= pc_processing.pc_integrator:main',
+            'IcaRAus_densifying_dynamic_edge_conv_gnn= pc_processing.IcaRAus_densifying_dynamic_edge_conv_gnn:main'
         ],
     },
 )

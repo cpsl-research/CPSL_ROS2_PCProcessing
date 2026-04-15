@@ -1,0 +1,12 @@
+IcaRAus_densifying_dynamic_edge_conv_gnn:
+  ros__parameters:
+    base_frame: "cpsl_ugv_1/base_link"
+    in_point_cloud_topics: ["radar_0/detected_points", "radar_1/detected_points"]
+    odom_sub_topic: "odom"
+    detected_point_cloud_pub_topic: "radar_combined/detected_points"
+    dynamic_point_cloud_pub_topic: "radar_combined/dynamic_points"
+    static_point_cloud_pub_topic: "radar_combined/static_points"
+    integrated_point_cloud_pub_topic: "radar_combined/integrated_pc"
+    update_rate: 10.0
+    model_state_dict_path: "/home/cpsl/CPSL_ROS2_PCProcessing/src/pc_processing/model_state_dicts/IcaRAus_DensifyingDeepDynamicEdgeConvGnn_grid_50fh_no_rmv_occlusion_pts_0_25_eps_10_min_20_sub_70_fov_1_0_accu_subsample_100_sparse_points.pth"
+    model_config_path: "/home/cpsl/CPSL_ROS2_PCProcessing/submodules/mmwave_model_integrator/configs/IcaRAus_gnn/IcaRAus_densifying_deep_dynamic_edge_conv_gnn_50fh_no_rmv_occlusion_pts_0_25_eps_10_min_20_sub_70_fov_1_0_accu_subsample_100_sparse_points.py"
