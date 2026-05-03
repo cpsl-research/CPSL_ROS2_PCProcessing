@@ -1,6 +1,6 @@
 IcaRAus_densifying_dynamic_edge_conv_gnn:
   ros__parameters:
-    base_frame: "cpsl_ugv_1/base_link"
+    base_frame: "cpsl_ugv_1/base_footprint"
     in_point_cloud_topics: ["radar_0/detected_points", "radar_1/detected_points"]
     odom_sub_topic: "odom"
     detected_point_cloud_pub_topic: "radar_combined/detected_points"

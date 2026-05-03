@@ -53,10 +53,10 @@ def launch_setup(context, *args, **kwargs):
         if not namespace_str.startswith('/'):
             namespace_str = '/' + namespace_str
         tf_prefix = namespace_str.strip("/")
-        laser_scan_target_frame = '{}/base_link'.format(tf_prefix)
+        laser_scan_target_frame = '{}/base_footprint'.format(tf_prefix)
     else:
         tf_prefix = ""
-        laser_scan_target_frame = "base_link"
+        laser_scan_target_frame = "base_footprint"
     
     param_file_str = param_file.perform(context)
     param_file_path = PathJoinSubstitution([pkg_pc_processing, 'configs', param_file_str])
